@@ -8,19 +8,36 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type OperationType int
+
+const (
+	GET_ONE_OPERATION OperationType = iota
+	GET_ALL_OPERATION
+	CREATE_OPERATION
+	UPDATE_OPERATION
+	DELETE_OPERATION
+)
+
 type IEngineType interface {
+	// Fiber path
 	GetEntityName() string
-	TableName() string
+	// Fiber Middlewares
+	GetMiddlewares(OperationType) []func(*fiber.Ctx) error
+	// Go instances
 	GetInstance() IEngineType
 	GetSliceOfInstances() []IEngineType
+	// Database
+	TableName() string
 	GetSearchableFields() []string
 	GetSortableFields() []string
 	GetRelations() []string
-	GetOneRecord(*fiber.Ctx) ([]string, interface{}, bool, error)
-	GetAllRecords(*fiber.Ctx) ([]string, interface{}, PaginationDetails, bool, error)
+	// Parsing and validation
 	ParseIdFromParam(*fiber.Ctx) (bool, error)
 	ParseFromBody(*fiber.Ctx) (bool, error)
 	Validate(*fiber.Ctx) (bool, error)
+	// Main Services
+	GetOneRecord(*fiber.Ctx) ([]string, interface{}, bool, error)
+	GetAllRecords(*fiber.Ctx) ([]string, interface{}, PaginationDetails, bool, error)
 	CreateRecord(*fiber.Ctx) (bool, error)
 	UpdateRecord(*fiber.Ctx) (bool, error)
 	DeleteRecord(*fiber.Ctx) (bool, error)
@@ -52,7 +69,8 @@ func GenerateRoutes(app *fiber.App, entity IEngineType) error {
 	}
 
 	for _, route := range routes {
-		app.Add(route.Method, route.Path, route.Handler)
+		handlers := append(route.Middlewares, route.Handler)
+		app.Add(route.Method, route.Path, handlers...)
 	}
 	return nil
 }
@@ -64,9 +82,10 @@ func GetRoutes(entity IEngineType) ([]Route, error) {
 }
 
 type Route struct {
-	Method  string
-	Path    string
-	Handler fiber.Handler
+	Method      string
+	Path        string
+	Handler     fiber.Handler
+	Middlewares []func(*fiber.Ctx) error
 }
 
 func GetDefaultRoutes(entity IEngineType) []Route {
@@ -74,29 +93,34 @@ func GetDefaultRoutes(entity IEngineType) []Route {
 	entityName := entity.GetEntityName()
 	return []Route{
 		{
-			Method:  "GET",
-			Path:    fmt.Sprintf("/%s/", entityName),
-			Handler: generateGetAll(entity),
+			Method:      "GET",
+			Path:        fmt.Sprintf("/%s/", entityName),
+			Handler:     generateGetAll(entity),
+			Middlewares: entity.GetMiddlewares(GET_ONE_OPERATION),
 		},
 		{
-			Method:  "GET",
-			Path:    fmt.Sprintf("/%s/:id", entityName),
-			Handler: generateGetOne(entity),
+			Method:      "GET",
+			Path:        fmt.Sprintf("/%s/:id", entityName),
+			Handler:     generateGetOne(entity),
+			Middlewares: entity.GetMiddlewares(GET_ALL_OPERATION),
 		},
 		{
-			Method:  "POST",
-			Path:    fmt.Sprintf("/%s/", entityName),
-			Handler: generateCreate(entity),
+			Method:      "POST",
+			Path:        fmt.Sprintf("/%s/", entityName),
+			Handler:     generateCreate(entity),
+			Middlewares: entity.GetMiddlewares(CREATE_OPERATION),
 		},
 		{
-			Method:  "PUT",
-			Path:    fmt.Sprintf("/%s/:id", entityName),
-			Handler: generateUpdate(entity),
+			Method:      "PUT",
+			Path:        fmt.Sprintf("/%s/:id", entityName),
+			Handler:     generateUpdate(entity),
+			Middlewares: entity.GetMiddlewares(UPDATE_OPERATION),
 		},
 		{
-			Method:  "DELETE",
-			Path:    fmt.Sprintf("/%s/:id", entityName),
-			Handler: generateDelete(entity),
+			Method:      "DELETE",
+			Path:        fmt.Sprintf("/%s/:id", entityName),
+			Handler:     generateDelete(entity),
+			Middlewares: entity.GetMiddlewares(DELETE_OPERATION),
 		},
 	}
 }
