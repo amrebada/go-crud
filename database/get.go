@@ -13,6 +13,8 @@ func GetRecord[T any](model T, entity crud.IEngineType, id string, ctx *fiber.Ct
 	record = reflect.New(reflect.TypeOf(model)).Interface()
 
 	query := DB.Instance.Where("id = ?", id)
+
+	addQueryFilter(query, ctx)
 	relations, ok, err = GetRelationsQuery(model, entity, ctx, query)
 	if !ok {
 		crudErrors.LogError(err)

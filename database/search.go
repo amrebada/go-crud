@@ -17,6 +17,7 @@ import (
 func GetRecords[T any](model *T, entity crud.IEngineType, ctx *fiber.Ctx) (relations []string, records interface{}, paginationDetails crud.PaginationDetails, ok bool, err error) {
 	models := reflect.New(reflect.SliceOf(reflect.TypeOf(model))).Interface()
 	query := DB.Instance.Model(model)
+	addQueryFilter(query, ctx)
 	ok, err = GetSearchQuery(model, entity, ctx, query)
 	if !ok {
 		return relations, nil, crud.PaginationDetails{}, false, err
