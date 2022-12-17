@@ -23,7 +23,7 @@ func addQueryFilter(query *gorm.DB, ctx *fiber.Ctx) (ok bool, err error) {
 
 }
 
-func AssignFilters(ctx *fiber.Ctx, filters string, filterParams []interface{}) {
+func AssignFilters(ctx *fiber.Ctx, filters string, filterParams ...[]interface{}) {
 	ctx.Locals(DB_FILTERS_KEY, filters)
 	ctx.Locals(DB_FILTERS_PARAMS_KEY, filterParams)
 }
