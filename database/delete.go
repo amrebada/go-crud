@@ -1,7 +1,7 @@
 package database
 
 import (
-	crudErrors "sandbox/go-crud/errors"
+	crudErrors "github.com/amrebada/go-crud/errors"
 
 	"github.com/gofiber/fiber/v2"
 )

@@ -1,4 +1,4 @@
-module sandbox/go-crud
+module github.com/amrebada/go-crud
 
 go 1.19
 

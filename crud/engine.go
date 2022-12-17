@@ -2,7 +2,8 @@ package crud
 
 import (
 	"fmt"
-	"sandbox/go-crud/errors"
+
+	"github.com/amrebada/go-crud/errors"
 
 	"github.com/gofiber/fiber/v2"
 )

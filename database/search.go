@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"math"
 	"reflect"
-	"sandbox/go-crud/crud"
-	crudErrors "sandbox/go-crud/errors"
-	"sandbox/go-crud/slices"
 	"strings"
+
+	"github.com/amrebada/go-crud/crud"
+	crudErrors "github.com/amrebada/go-crud/errors"
+	"github.com/amrebada/go-crud/slices"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"

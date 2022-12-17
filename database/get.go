@@ -2,8 +2,9 @@ package database
 
 import (
 	"reflect"
-	"sandbox/go-crud/crud"
-	crudErrors "sandbox/go-crud/errors"
+
+	"github.com/amrebada/go-crud/crud"
+	crudErrors "github.com/amrebada/go-crud/errors"
 
 	"github.com/gofiber/fiber/v2"
 )

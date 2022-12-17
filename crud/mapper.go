@@ -3,7 +3,8 @@ package crud
 import (
 	"errors"
 	"reflect"
-	"sandbox/go-crud/slices"
+
+	"github.com/amrebada/go-crud/slices"
 )
 
 func MapRelations(entity any, relations []string) (interface{}, error) {
