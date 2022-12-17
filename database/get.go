@@ -12,7 +12,7 @@ import (
 func GetRecord[T any](model T, entity crud.IEngineType, id string, ctx *fiber.Ctx) (relations []string, record interface{}, ok bool, err error) {
 	record = reflect.New(reflect.TypeOf(model)).Interface()
 
-	query := DB.instance.Where("id = ?", id)
+	query := DB.Instance.Where("id = ?", id)
 	relations, ok, err = GetRelationsQuery(model, entity, ctx, query)
 	if !ok {
 		crudErrors.LogError(err)
